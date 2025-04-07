@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+
+# Virtual environments
+.venv/
+venv/
+
+# Test reports
+htmlcov/
+*.cover
+coverage.xml
+
+# Environment files
+.env
+*.env
+env
+*_env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VSCode, PyCharm, etc.
+.vscode/
+.idea/
