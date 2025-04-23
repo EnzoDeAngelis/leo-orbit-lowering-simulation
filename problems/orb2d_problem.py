@@ -7,7 +7,7 @@ import os
 from problems.base_problem import BaseProblem
 
 class OrbitalProblem(BaseProblem):
-    def __init__(self, initial_state=[1.2, 0.0, 0.0, np.sqrt(1/1.2), 1],
+    def __init__(self, initial_state=[1.2, 0.0, 0.0, np.sqrt(1/1.2), 1],     # Lo stato iniziale viene letto da qui solo se non esiste il file prob.yaml
                  switching_structure=[1, 0, 1]):
         super().__init__()
         self.initial_state = initial_state
@@ -64,8 +64,8 @@ class OrbitalProblem(BaseProblem):
         return swfun(state, data)
 
     def boundary_error(self, param_guess, data, timefree):
-        lr0, lth0, lu0, lv0, lm0, *tfs = param_guess
-
+        lr0, lth0, lu0, lv0, lm0, *tfs = param_guess                # A prescindere da quanti archi si abbiano, tutti i tempi di switch 
+                                                                    # ed il tempo finale vengono salvati nel vettore tfs (*tfs)
         full0 = [*self.initial_state, lr0, lth0, lu0, lv0, lm0]
 
         NA = 1
