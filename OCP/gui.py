@@ -1,4 +1,7 @@
 import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import numpy as np
 
 from PyQt5.QtWidgets import (
@@ -8,7 +11,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtWidgets import QComboBox
 from PyQt5.QtCore import Qt
 
-from problems.orb2d_problem import OrbitalProblem
+from problems.orb3d_problem import OrbitalProblem
 from problems.base_problem import BaseProblem
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -224,10 +227,12 @@ class PlanarGUI(QMainWindow):
         vbox_costates.addLayout(row1)
         vbox_costates.addLayout(row2)
 
-        self.spin_lx = QDoubleSpinBox(); row1.addWidget(QLabel("lx0:")); row1.addWidget(self.spin_lx)
-        self.spin_ly = QDoubleSpinBox(); row1.addWidget(QLabel("ly0:")); row1.addWidget(self.spin_ly)
-        self.spin_lvx= QDoubleSpinBox();row2.addWidget(QLabel("lvx0:"));row2.addWidget(self.spin_lvx)
-        self.spin_lvy= QDoubleSpinBox();row2.addWidget(QLabel("lvy0:"));row2.addWidget(self.spin_lvy)
+        self.spin_lx = QDoubleSpinBox(); row1.addWidget(QLabel("lr0:")); row1.addWidget(self.spin_lx)
+        self.spin_ly = QDoubleSpinBox(); row1.addWidget(QLabel("lth0:")); row1.addWidget(self.spin_ly)
+        self.spin_lz = QDoubleSpinBox(); row1.addWidget(QLabel("lph0:")); row1.addWidget(self.spin_lz)
+        self.spin_lvx= QDoubleSpinBox();row2.addWidget(QLabel("lu0:"));row2.addWidget(self.spin_lvx)
+        self.spin_lvy= QDoubleSpinBox();row2.addWidget(QLabel("lv0:"));row2.addWidget(self.spin_lvy)
+        self.spin_lvz= QDoubleSpinBox();row2.addWidget(QLabel("lw0:"));row2.addWidget(self.spin_lvz)
         self.spin_lm = QDoubleSpinBox(); row2.addWidget(QLabel("lm0:")); row2.addWidget(self.spin_lm)
 
         # switch times
@@ -248,7 +253,7 @@ class PlanarGUI(QMainWindow):
         row2.addWidget(QLabel("Time guess:")); row2.addWidget(self.spin_tf)
 
         # Set ranges/precision
-        self.costate_spins = [self.spin_lx, self.spin_ly, self.spin_lvx, self.spin_lvy, self.spin_lm]
+        self.costate_spins = [self.spin_lx, self.spin_ly, self.spin_lz, self.spin_lvx, self.spin_lvy, self.spin_lvz, self.spin_lm]
         for sp in self.costate_spins:
             sp.setRange(-1e6, 1e6)
             sp.setDecimals(8)
@@ -356,16 +361,18 @@ class PlanarGUI(QMainWindow):
         lbl_upd = QLabel("UPDATED param (costates + tf):")
         third_layout.addWidget(lbl_upd)
 
-        self.upd_lx = QDoubleSpinBox(); third_layout.addWidget(QLabel("lx_upd:")); third_layout.addWidget(self.upd_lx)
-        self.upd_ly = QDoubleSpinBox(); third_layout.addWidget(QLabel("ly_upd:")); third_layout.addWidget(self.upd_ly)
-        self.upd_lvx= QDoubleSpinBox(); third_layout.addWidget(QLabel("lvx_upd:"));third_layout.addWidget(self.upd_lvx)
-        self.upd_lvy= QDoubleSpinBox(); third_layout.addWidget(QLabel("lvy_upd:"));third_layout.addWidget(self.upd_lvy)
+        self.upd_lx = QDoubleSpinBox(); third_layout.addWidget(QLabel("lr_upd:")); third_layout.addWidget(self.upd_lx)
+        self.upd_ly = QDoubleSpinBox(); third_layout.addWidget(QLabel("lth_upd:")); third_layout.addWidget(self.upd_ly)
+        self.upd_lz = QDoubleSpinBox(); third_layout.addWidget(QLabel("lph_upd:")); third_layout.addWidget(self.upd_lz)        
+        self.upd_lvx= QDoubleSpinBox(); third_layout.addWidget(QLabel("lu_upd:"));third_layout.addWidget(self.upd_lvx)
+        self.upd_lvy= QDoubleSpinBox(); third_layout.addWidget(QLabel("lv_upd:"));third_layout.addWidget(self.upd_lvy)
+        self.upd_lvz= QDoubleSpinBox(); third_layout.addWidget(QLabel("lw_upd:"));third_layout.addWidget(self.upd_lvz)        
         self.upd_lm = QDoubleSpinBox(); third_layout.addWidget(QLabel("lm_upd:")); third_layout.addWidget(self.upd_lm)
         self.upd_t1 = QDoubleSpinBox(); third_layout.addWidget(QLabel("t1_upd:")); third_layout.addWidget(self.upd_t1)
         self.upd_t2 = QDoubleSpinBox(); third_layout.addWidget(QLabel("t2_upd:")); third_layout.addWidget(self.upd_t2)
         self.upd_tf = QDoubleSpinBox(); third_layout.addWidget(QLabel("tf_upd:")); third_layout.addWidget(self.upd_tf)
 
-        self.updated_spins = [self.upd_lx, self.upd_ly, self.upd_lvx, self.upd_lvy, self.upd_lm, self.upd_t1, self.upd_t2, self.upd_tf]
+        self.updated_spins = [self.upd_lx, self.upd_ly, self.upd_lz, self.upd_lvx, self.upd_lvy, self.upd_lvz, self.upd_lm, self.upd_t1, self.upd_t2, self.upd_tf]
         for sp in self.updated_spins:
             sp.setRange(-1e8, 1e8)
             sp.setDecimals(6)
@@ -377,7 +384,7 @@ class PlanarGUI(QMainWindow):
         # -------------------------------------------------------------
         self.canvas = MplCanvas(self, width=12, height=6, dpi=100)
         self.main_layout.addWidget(self.canvas)
-        self.axes = self.canvas.fig.subplots(3,4).flatten()
+        self.axes = self.canvas.fig.subplots(4,4).flatten()
         for ax in self.axes:
             ax.grid(True)
 
@@ -438,10 +445,12 @@ class PlanarGUI(QMainWindow):
             data_dict["lam_initial"] = {
                 "lx0":  self.lam_initial[0],
                 "ly0":  self.lam_initial[1],
-                "lvx0": self.lam_initial[2],
-                "lvy0": self.lam_initial[3],
-                "lm0":  self.lam_initial[4],
-                "tf0":  self.lam_initial[5] if len(self.lam_initial) == 6 else None
+                "lz0":  self.lam.initial[2],
+                "lvx0": self.lam_initial[3],
+                "lvy0": self.lam_initial[4],
+                "lvz0": self.lam_initial[5],
+                "lm0":  self.lam_initial[6],
+                "tf0":  self.lam_initial[7] if len(self.lam_initial) == 8 else None
             }
         else:
             data_dict["lam_initial"] = "No initial guess stored yet"
@@ -451,8 +460,10 @@ class PlanarGUI(QMainWindow):
         lam_upd = [
             self.upd_lx.value(),
             self.upd_ly.value(),
+            self.upd_lz.value(),
             self.upd_lvx.value(),
             self.upd_lvy.value(),
+            self.upd_lvz.value(),
             self.upd_lm.value()
         ]
         # If you have an updated final time spin: self.upd_tf
@@ -461,10 +472,12 @@ class PlanarGUI(QMainWindow):
         data_dict["lam_updated"] = {
             "lx":  lam_upd[0],
             "ly":  lam_upd[1],
-            "lvx": lam_upd[2],
-            "lvy": lam_upd[3],
-            "lm":  lam_upd[4],
-            "tf":  lam_upd[5]
+            "lz":  lam_upd[2],         
+            "lvx": lam_upd[3],
+            "lvy": lam_upd[4],
+            "lvz": lam_upd[5],
+            "lm":  lam_upd[6],
+            "tf":  lam_upd[7]
         }
 
         # Just an example: store the iteration count
@@ -478,14 +491,16 @@ class PlanarGUI(QMainWindow):
     
     def read_param_guess(self):
         """
-        Return 6D param = [lx0, ly0, lvx0, lvy0, lm0, tf].
+        Return 8D param = [lx0, ly0, lz0, lvx0, lvy0, lvz0, lm0, tf].
         We'll use the spin_time as the last entry.
         """
         return [
             self.spin_lx.value(),
             self.spin_ly.value(),
+            self.spin_lz.value(),
             self.spin_lvx.value(),
             self.spin_lvy.value(),
+            self.spin_lvz.value(),
             self.spin_lm.value(),
             self.spin_t1.value(),
             self.spin_t2.value(),
@@ -499,14 +514,16 @@ class PlanarGUI(QMainWindow):
         """
         self.upd_lx.setValue(param[0])
         self.upd_ly.setValue(param[1])
-        self.upd_lvx.setValue(param[2])
-        self.upd_lvy.setValue(param[3])
-        self.upd_lm.setValue(param[4])
-        self.upd_t1.setValue(param[5])
-        self.upd_t2.setValue(param[6])
+        self.upd_lz.setValue(param[2])
+        self.upd_lvx.setValue(param[3])
+        self.upd_lvy.setValue(param[4])
+        self.upd_lvz.setValue(param[5])
+        self.upd_lm.setValue(param[6])
+        self.upd_t1.setValue(param[7])
+        self.upd_t2.setValue(param[8])
         if self.timefree:
-            self.upd_tf.setValue(param[7])
-            self.spin_tf.setValue(param[7])
+            self.upd_tf.setValue(param[9])
+            self.spin_tf.setValue(param[9])
 
     ####################################################################
     #   Spin steps
@@ -643,8 +660,10 @@ class PlanarGUI(QMainWindow):
         return [
             self.upd_lx.value(),
             self.upd_ly.value(),
+            self.upd_lz.value(),
             self.upd_lvx.value(),
             self.upd_lvy.value(),
+            self.upd_lvz.value(),
             self.upd_lm.value(),
             self.upd_t1.value(),
             self.upd_t2.value(),
@@ -681,11 +700,13 @@ class PlanarGUI(QMainWindow):
         self.trueplot = True
         if self.lam_initial is not None:
             # restore top guess
-            lx0, ly0, lvx0, lvy0, lm0, *ts = self.lam_initial
+            lx0, ly0, lz0, lvx0, lvy0, lvz0, lm0, *ts = self.lam_initial
             self.spin_lx.setValue(lx0)
             self.spin_ly.setValue(ly0)
+            self.spin_lz.setValue(lz0)
             self.spin_lvx.setValue(lvx0)
             self.spin_lvy.setValue(lvy0)
+            self.spin_lvz.setValue(lvz0)
             self.spin_lm.setValue(lm0)
             NA = 1
             if self.current_problem.switching_structure is not None:

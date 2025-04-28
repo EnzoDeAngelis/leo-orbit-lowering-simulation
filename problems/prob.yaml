@@ -1,0 +1,18 @@
+initial_state:
+  r: 1.2
+  theta: 0.0
+  phi: 0.0
+  u: 0.0
+  v: 0.9128709291752762
+  w: 0.0
+  m: 1.0
+boundary_conditions:
+  r: 1.5
+  ltheta: 0.0
+  lphi: 0.0
+  u: 0.0
+  v: 0.816496580927726
+  w: 0.0
+  lm: 1.0
+format:
+  dimensional: false

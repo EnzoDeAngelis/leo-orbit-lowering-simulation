@@ -1,6 +1,9 @@
 import numpy as np
-from pymsis import run_msis, msis_inputs
-from datetime import datetime, timedelta
+import msise00
+from datetime import datetime
+from numba import njit
+
+
 
 
 def spherical_to_cartesian(r, th, ph):
@@ -53,38 +56,37 @@ def atmosphere_velocity_ijk(r_ijk, R = 6371, V = 7.909788019132536):
     return np.cross(omega_earth, r_ijk)
 
 
-def get_density_msis(alt, lon, lat, date = datetime(2025, 4, 15, 12, 0, 0), f107s=150.0, f107as=150.0, ap=10):
-
+def get_density_msis(alt, lon, lat, date=datetime(2025, 4, 15, 12, 0, 0), f107s=150.0, f107as=150.0, ap=10):
     """
-    Calcola la densità atmosferica a una certa altitudine usando il modello MSISE-00.
-    
-    Parametri:
-    - date: oggetto datetime (data e ora in UTC) 
-    - lon: longitudine in gradi
-    - lat: latitudine in gradi
-    - alt: altitudine in km
-    - f107s: (default=150.0) flusso solare F10.7 (I valori di solito spaziano da 70 a 300)
-    - f107as: (default=150.0) media di 81 giorni di F10.7
-    - ap: (default=10) indice geomagnetico Ap (I valori di solito spaziano da 0 a 20)
-
-    Restituisce:
-    - densità atmosferica in kg/m³ (valore float)
+    Calcola la densità atmosferica usando msise00.run.
     """
-    
-    # Create MSIS input object
-    inputs = msis_inputs(
-        times=[date],
-        altitudes=[alt],
-        latitudes=[lat],
-        longitudes=[lon],
-        f107s=[f107s],
-        f107as=[f107as],
-        aps=[ap]
-    )
 
-    output = run_msis(inputs)
-    rho = output['Total mass density'][0]  # [kg/m³]
+    # Converto la data
+    doy = date.timetuple().tm_yday
+    seconds = date.hour*3600 + date.minute*60 + date.second
+
+    # Creo il dizionario input come richiesto da msise00.run
+    input_params = {
+        'year': date.year,
+        'doy': doy,
+        'seconds': seconds,
+        'alt': alt,       # in km
+        'g_lat': lat,     # latitudine geodetica in gradi
+        'g_long': lon,    # longitudine geodetica in gradi
+        'lst': seconds/3600.0,   # local solar time (approssimato)
+        'f107A': f107as,
+        'f107': f107s,
+        'ap': ap,
+    }
+
+    # Chiamo il modello
+    output = msise00.run(input_params)
+
+    # Estraggo la densità
+    rho = output['density'] * 1e3   # Convertiamo da g/cm³ a kg/m³
+
     return rho
+
 
 def compute_drag_acceleration_ijk(rho, v_rel, m, Cd = 2.2, A = 0.5):
     """
@@ -96,8 +98,8 @@ def compute_drag_acceleration_ijk(rho, v_rel, m, Cd = 2.2, A = 0.5):
 
     return a_drag
 
-
-def compute_drag_acceleration_zen(r, th, ph, u, v, w, m, CD, A, R = 6371):
+@njit
+def compute_drag_acceleration_zen(r, th, ph, u, v, w, m, R = 6371):
     
     r_ijk = spherical_to_cartesian(r, th, ph)
     T_zen_to_ijk = zen_to_ijk_matrix(th, ph)
