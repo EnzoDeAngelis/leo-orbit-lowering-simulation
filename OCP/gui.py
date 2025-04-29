@@ -575,12 +575,12 @@ class PlanarGUI(QMainWindow):
             self.axes[i].set_title(rf"${labels[i]}$")
 
         # SF(t) plot
-        self.plot_colored_segments(self.axes[10], t_array, sf_array, sf_array)
-        self.axes[10].set_title("SF(t)")
+        self.plot_colored_segments(self.axes[14], t_array, sf_array, sf_array)
+        self.axes[14].set_title("SF(t)")
 
         # Hamiltonian plot
-        self.plot_colored_segments(self.axes[11], t_array, H_array, sf_array)
-        self.axes[11].set_title("Hamiltonian(t)")
+        self.plot_colored_segments(self.axes[15], t_array, H_array, sf_array)
+        self.axes[15].set_title("Hamiltonian(t)")
 
         self.canvas.fig.tight_layout()
         self.canvas.draw()

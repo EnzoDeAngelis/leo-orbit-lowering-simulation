@@ -186,11 +186,14 @@ def ode_orb3d(t, fullstate, data, TS=None):
     
     au, av, aw = 0.0, 0.0, 0.0
     
-    a_drag_zen = compute_drag_acceleration_zen(r, th, ph, u, v, w, m)
+    #a_drag_zen = compute_drag_acceleration_zen(r, th, ph, u, v, w, m)
     
-    a_drag_u = a_drag_zen[0]
-    a_drag_v = a_drag_zen[1]
-    a_drag_w= a_drag_zen[2]
+    # a_drag_u = a_drag_zen[0]
+    # a_drag_v = a_drag_zen[1]
+    # a_drag_w= a_drag_zen[2]
+    
+    a_drag_u, a_drag_v, a_drag_w = 0.0, 0.0, 0.0
+    
     
     
     if (T > 0.0) and (LV > 1e-12):
@@ -202,12 +205,16 @@ def ode_orb3d(t, fullstate, data, TS=None):
         av = a_drag_v
         aw = a_drag_w
     
-    # Calcolo derivate che compaiono nelle ODE
-    J = compute_drag_partials_extended(r, th, ph, u, v, w, m)
-    # Estrai righe: una per ogni componente dell'accelerazione (u, v, w)
-    da_u_dr, da_u_dth, da_u_dph, da_u_dm = J[0, :]
-    da_v_dr, da_v_dth, da_v_dph, da_v_dm = J[1, :]
-    da_w_dr, da_w_dth, da_w_dph, da_w_dm = J[2, :]
+    # # Calcolo derivate che compaiono nelle ODE
+    # J = compute_drag_partials_extended(r, th, ph, u, v, w, m)
+    # # Estrai righe: una per ogni componente dell'accelerazione (u, v, w)
+    # da_u_dr, da_u_dth, da_u_dph, da_u_dm = J[0, :]
+    # da_v_dr, da_v_dth, da_v_dph, da_v_dm = J[1, :]
+    # da_w_dr, da_w_dth, da_w_dph, da_w_dm = J[2, :]
+    
+    da_u_dr, da_u_dth, da_u_dph, da_u_dm = 0.0, 0.0, 0.0, 0.0
+    da_v_dr, da_v_dth, da_v_dph, da_v_dm = 0.0, 0.0, 0.0, 0.0
+    da_w_dr, da_w_dth, da_w_dph, da_w_dm = 0.0, 0.0, 0.0, 0.0
     
     dfdt = np.zeros_like(fullstate)    
     
@@ -246,11 +253,13 @@ def compute_H_orb3d(fullstate, data, TS=None):
         
     au, av, aw = 0.0, 0.0, 0.0
     
-    a_drag_zen = compute_drag_acceleration_zen(r, th, ph, u, v, w, m)
+    a_drag_u, a_drag_v, a_drag_w = 0.0, 0.0, 0.0
     
-    a_drag_u = a_drag_zen[0]
-    a_drag_v = a_drag_zen[1]
-    a_drag_w = a_drag_zen[2]
+    # a_drag_zen = compute_drag_acceleration_zen(r, th, ph, u, v, w, m)
+    
+    # a_drag_u = a_drag_zen[0]
+    # a_drag_v = a_drag_zen[1]
+    # a_drag_w = a_drag_zen[2]
     
     if (T > 0.0) and (LV > 1e-12):
         au = (T/m) * (lu / LV) + a_drag_u
