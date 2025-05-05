@@ -384,8 +384,8 @@ class PlanarGUI(QMainWindow):
         # -------------------------------------------------------------
         self.canvas = MplCanvas(self, width=12, height=6, dpi=100)
         self.main_layout.addWidget(self.canvas)
-        self.axes = self.canvas.fig.subplots(4,4).flatten()
-        for ax in self.axes:
+        self.axes = self.canvas.fig.subplots(4,4).flatten()               # modifico subplots(3,4) in subplots(4,4) per far comparire 
+        for ax in self.axes:                                              # un'ulteriore riga di grafici (i plot da 12 diventano 16) 
             ax.grid(True)
 
         # Rocket parameters
@@ -575,8 +575,8 @@ class PlanarGUI(QMainWindow):
             self.axes[i].set_title(rf"${labels[i]}$")
 
         # SF(t) plot
-        self.plot_colored_segments(self.axes[14], t_array, sf_array, sf_array)
-        self.axes[14].set_title("SF(t)")
+        self.plot_colored_segments(self.axes[14], t_array, sf_array, sf_array)      # Cabio l'indice di self.axes (da [10]/[11] a [14]/[15]) sia per SF 
+        self.axes[14].set_title("SF(t)")                                            # che H in modo da avere la label giusta sui plot 3D
 
         # Hamiltonian plot
         self.plot_colored_segments(self.axes[15], t_array, H_array, sf_array)

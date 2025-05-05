@@ -4,7 +4,7 @@ R = 6371     # Raggio terrestre
 mu = 398600  # Mu Terra
 
 # Quota di riferimento
-h = 498.8
+h = 499.7
 
 # Raggio adimensionale
 r = (h+R)/R

@@ -6,6 +6,7 @@ import os
 from math import sin, cos, tan
 from OCP.drag_functions import compute_drag_acceleration_zen
 from OCP.compute_derivative import compute_drag_partials_extended
+from OCP.adimensionalization import adimensionalizing_mu
 
 from problems.base_problem import BaseProblem
 
@@ -175,7 +176,7 @@ def swfun(fullstate, data):
 def ode_orb3d(t, fullstate, data, TS=None):
     r, th, ph, u, v, w, m, lr, lth, lph, lu, lv, lw, lm = fullstate
     T_max, u_e, _ = data
-    mu = 398600
+    mu = adimensionalizing_mu(398600.4418)
     
     # switching function
     sf, LV = swfun(fullstate, data)
@@ -242,7 +243,7 @@ def ode_orb3d(t, fullstate, data, TS=None):
 def compute_H_orb3d(fullstate, data, TS=None):
     r, th, ph, u, v, w, m, lr, lth, lph, lu, lv, lw, lm = fullstate
     T_max, u_e, _ = data
-    mu = 398600
+    mu = adimensionalizing_mu(398600.4418)
     
     sf, LV = swfun(fullstate, data)
     
