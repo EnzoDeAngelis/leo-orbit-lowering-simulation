@@ -4,9 +4,6 @@ from numba import njit
 import yaml
 import os
 from math import sin, cos, tan
-from OCP.drag_functions import compute_drag_acceleration_zen
-from OCP.compute_derivative import compute_drag_partials_extended
-from OCP.adimensionalization import adimensionalizing_mu
 
 from problems.base_problem import BaseProblem
 
@@ -176,7 +173,7 @@ def swfun(fullstate, data):
 def ode_orb3d(t, fullstate, data, TS=None):
     r, th, ph, u, v, w, m, lr, lth, lph, lu, lv, lw, lm = fullstate
     T_max, u_e, _ = data
-    mu = adimensionalizing_mu(398600.4418)
+    
     
     # switching function
     sf, LV = swfun(fullstate, data)
@@ -223,13 +220,13 @@ def ode_orb3d(t, fullstate, data, TS=None):
     dfdt[0] = u
     dfdt[1] = v/(r*cos(ph))
     dfdt[2] = w/r
-    dfdt[3] = -mu/r**2 + v**2/r + w**2/r + au
+    dfdt[3] = -1/r**2 + v**2/r + w**2/r + au
     dfdt[4] = -u*v/r + v*(w/r) * tan(ph)+ av
     dfdt[5] = -u*w/r - (v**2/r) * tan(ph) + aw
     dfdt[6] = -T / u_e
 
     # Costates
-    dfdt[7] = (1/r**2) * (lth*v/cos(ph) + lph*w + lu*(-2*mu/r + v**2 + w**2) + lv*(-u*v + v*w*tan(ph)) + lw*(-u*w - v**2*tan(ph))) - lu*da_u_dr - lv*da_v_dr - lw*da_w_dr
+    dfdt[7] = (1/r**2) * (lth*v/cos(ph) + lph*w + lu*(-2*1/r + v**2 + w**2) + lv*(-u*v + v*w*tan(ph)) + lw*(-u*w - v**2*tan(ph))) - lu*da_u_dr - lv*da_v_dr - lw*da_w_dr
     dfdt[8] = - lu*da_u_dth - lv*da_v_dth - lw*da_w_dth
     dfdt[9] = 1/(r*cos(ph)**2)*(-lth*v*sin(ph) - lv*v*w + lw*v**2) - lu*da_u_dph - lv*da_v_dph - lw*da_w_dph
     dfdt[10] = (1/r) * (-lr*r + lv*v + lw*w)
@@ -243,7 +240,7 @@ def ode_orb3d(t, fullstate, data, TS=None):
 def compute_H_orb3d(fullstate, data, TS=None):
     r, th, ph, u, v, w, m, lr, lth, lph, lu, lv, lw, lm = fullstate
     T_max, u_e, _ = data
-    mu = adimensionalizing_mu(398600.4418)
+    
     
     sf, LV = swfun(fullstate, data)
     
@@ -273,7 +270,7 @@ def compute_H_orb3d(fullstate, data, TS=None):
         
     return(
         lr*u + lth*v/(r*cos(ph)) + lph*w/r + 
-        lu*(-mu/r**2 + v**2/r + w**2/r + au) + 
+        lu*(-1/r**2 + v**2/r + w**2/r + au) + 
         lv*(-u*v/r + v*(w/r)*tan(ph) + av) + 
         lw*(-u*w/r - (v**2/r)*tan(ph) + aw)
         - lm*T/u_e

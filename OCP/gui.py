@@ -435,6 +435,7 @@ class PlanarGUI(QMainWindow):
         # Basic rocket params
         data_dict["T_max"] = self.T_max
         data_dict["u_e"]   = self.u_e
+        
 
         # Current alpha, delta
         data_dict["alpha"] = self.spin_alpha.value()
@@ -608,8 +609,8 @@ class PlanarGUI(QMainWindow):
         print("\nNew g: ", end="")
         for i, p in enumerate(param_next):
             print(f"{p: .4e} ", end="")
-        print(f"({np.linalg.norm(err): .4e}, {max(err):.4e})\nErr:   ", end="")
-        for i, e in enumerate(err):
+        print(f"({np.linalg.norm(err): .4e}, {max(abs(err)):.4e})\nErr:   ", end="")   # aggiunto il valore assoluto (abs(err)) in modo che stampi 
+        for i, e in enumerate(err):                                                    # il modulo del max errore residuo e non il massimo positivo
             print(f"{e: .4e} ", end="")
         print()
 
