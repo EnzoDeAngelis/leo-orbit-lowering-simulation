@@ -244,7 +244,17 @@ class PlanarGUI(QMainWindow):
         self.spin_t2 = QDoubleSpinBox()
         self.spin_t2.setRange(0.1, 1e6)
         self.spin_t2.setValue(0.0)
-        row2.addWidget(QLabel("t2:")); row2.addWidget(self.spin_t2)
+        row1.addWidget(QLabel("t2:")); row1.addWidget(self.spin_t2) # Sposto la casella per t2 alla riga 1
+        
+        self.spin_t3 = QDoubleSpinBox()
+        self.spin_t3.setRange(0.1, 1e6)
+        self.spin_t3.setValue(0.0)
+        row2.addWidget(QLabel("t3")); row2.addWidget(self.spin_t3) # Aggiungo casella per t3 nella riga 2
+        
+        self.spin_t4 = QDoubleSpinBox()
+        self.spin_t4.setRange(0.1, 1e6)
+        self.spin_t4.setValue(0.0)
+        row2.addWidget(QLabel("t4")); row2.addWidget(self.spin_t4) # Aggiungo casella per t4 nella riga 2
 
         # final time guess
         self.spin_tf = QDoubleSpinBox()
@@ -262,6 +272,8 @@ class PlanarGUI(QMainWindow):
 
         self.spin_t1.valueChanged.connect(self.on_plot)
         self.spin_t2.valueChanged.connect(self.on_plot)
+        self.spin_t3.valueChanged.connect(self.on_plot)
+        self.spin_t4.valueChanged.connect(self.on_plot)  # Aggiunte righe per t3 e t4
         self.spin_tf.valueChanged.connect(self.on_plot)
 
         self.btn_plot = QPushButton("Plot")
@@ -368,11 +380,13 @@ class PlanarGUI(QMainWindow):
         self.upd_lvy= QDoubleSpinBox(); third_layout.addWidget(QLabel("lv_upd:"));third_layout.addWidget(self.upd_lvy)
         self.upd_lvz= QDoubleSpinBox(); third_layout.addWidget(QLabel("lw_upd:"));third_layout.addWidget(self.upd_lvz)        
         self.upd_lm = QDoubleSpinBox(); third_layout.addWidget(QLabel("lm_upd:")); third_layout.addWidget(self.upd_lm)
-        self.upd_t1 = QDoubleSpinBox(); third_layout.addWidget(QLabel("t1_upd:")); third_layout.addWidget(self.upd_t1)
-        self.upd_t2 = QDoubleSpinBox(); third_layout.addWidget(QLabel("t2_upd:")); third_layout.addWidget(self.upd_t2)
+        self.upd_t1 = QDoubleSpinBox(); third_layout.addWidget(QLabel("t1_upd:")); third_layout.addWidget(self.upd_t1)  # Aggiungo righe per t3 e t4 e 
+        self.upd_t2 = QDoubleSpinBox(); third_layout.addWidget(QLabel("t2_upd:")); third_layout.addWidget(self.upd_t2)  # aggiorno self.update_spins
+        self.upd_t3 = QDoubleSpinBox(); third_layout.addWidget(QLabel("t3_upd:")); third_layout.addWidget(self.upd_t3)
+        self.upd_t4 = QDoubleSpinBox(); third_layout.addWidget(QLabel("t4_upd:")); third_layout.addWidget(self.upd_t4)
         self.upd_tf = QDoubleSpinBox(); third_layout.addWidget(QLabel("tf_upd:")); third_layout.addWidget(self.upd_tf)
 
-        self.updated_spins = [self.upd_lx, self.upd_ly, self.upd_lz, self.upd_lvx, self.upd_lvy, self.upd_lvz, self.upd_lm, self.upd_t1, self.upd_t2, self.upd_tf]
+        self.updated_spins = [self.upd_lx, self.upd_ly, self.upd_lz, self.upd_lvx, self.upd_lvy, self.upd_lvz, self.upd_lm, self.upd_t1, self.upd_t2, self.upd_t3, self.upd_t4, self.upd_tf]
         for sp in self.updated_spins:
             sp.setRange(-1e8, 1e8)
             sp.setDecimals(6)
@@ -505,6 +519,8 @@ class PlanarGUI(QMainWindow):
             self.spin_lm.value(),
             self.spin_t1.value(),
             self.spin_t2.value(),
+            self.spin_t3.value(),
+            self.spin_t4.value(),
             self.spin_tf.value()
         ]
 
@@ -522,9 +538,11 @@ class PlanarGUI(QMainWindow):
         self.upd_lm.setValue(param[6])
         self.upd_t1.setValue(param[7])
         self.upd_t2.setValue(param[8])
+        self.upd_t3.setValue(param[9])
+        self.upd_t4.setValue(param[10])
         if self.timefree:
-            self.upd_tf.setValue(param[9])
-            self.spin_tf.setValue(param[9])
+            self.upd_tf.setValue(param[11])
+            self.spin_tf.setValue(param[11])
 
     ####################################################################
     #   Spin steps
@@ -668,6 +686,8 @@ class PlanarGUI(QMainWindow):
             self.upd_lm.value(),
             self.upd_t1.value(),
             self.upd_t2.value(),
+            self.upd_t3.value(),
+            self.upd_t4.value(),
             self.upd_tf.value()
         ]
 
@@ -714,6 +734,8 @@ class PlanarGUI(QMainWindow):
                 NA = len(self.current_problem.switching_structure)
             self.spin_t1.setValue(ts[0])
             self.spin_t2.setValue(ts[1])
+            self.spin_t3.setValue(ts[2])
+            self.spin_t4.setValue(ts[3])        # Aggiungo righe per t3 e t4
             self.spin_tf.setValue(ts[-1])
 
         # clear updated param

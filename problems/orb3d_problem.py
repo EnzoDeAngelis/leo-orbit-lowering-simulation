@@ -9,7 +9,7 @@ from problems.base_problem import BaseProblem
 
 class OrbitalProblem(BaseProblem):
     def __init__(self, initial_state=[1.2, 0.0, 0.0, np.sqrt(1/1.2), 1],     # Lo stato iniziale viene letto da qui solo se non esiste il file prob.yaml
-                 switching_structure=[1, 0, 1]):
+                 switching_structure=[1, 0, 1, 0, 1]):
         super().__init__()
         self.initial_state = initial_state
         self.boundary_conditions = None
