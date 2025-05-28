@@ -4,7 +4,7 @@ R = 6371     # Raggio terrestre
 mu = 398600  # Mu Terra
 
 # Quota di riferimento
-h = 449.7
+h = 499.7
 
 # Raggio adimensionale
 r = (h+R)/R
@@ -115,3 +115,4 @@ print(f"La velocità adimensionale alla quota h = {h} km da inserire in prob.yam
 # Iter = 4861
 # Guess : -3.2176e-01 -1.4947e-02  0.0000e+00 3.2028e-02 -3.9607e-01  0.0000e+00  9.9954e-01  1.8700e+00  3.4500e+00  5.57e+00 (1.3352e+02, 1.3352e+02)
 # New g : -3.5368e-01 -6.0726e-05  0.0000e+00 1.4037e-04 -3.9549e-01  0.0000e+00  9.9999e-01  2.0612e+00  3.4998e+00  5.5743e+00 (5.4408e-02, 5.4408e-02)
+

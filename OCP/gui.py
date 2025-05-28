@@ -19,6 +19,7 @@ from matplotlib.figure import Figure
 
 from scipy.integrate import solve_ivp
 
+
 R = 6371                     # Km
 V = 7.909788019132536        # km/s
 T = R/V
@@ -73,6 +74,14 @@ def compute_corrections(jacobian, errors):
         corr = np.linalg.lstsq(jacobian, -errors, rcond=None)[0]
     return corr
 
+def convergence_fun(err, norm_err):
+    if max(abs(e) for e in err) < 1e-6:
+        return True
+    elif norm_err < 1e-4:
+        return True
+    else:
+        return False
+    
 def newton_shoot_step(problem: BaseProblem, param_guess, data, alpha=0.1, preverr=np.inf,
                       method="forward", timefree=False):
     counter = 0
@@ -688,7 +697,7 @@ class PlanarGUI(QMainWindow):
             param_next, err, norm_err = self.do_one_newton_iteration(param_current)
             param_current = param_next
             QApplication.processEvents()
-            if  max(err) < 1e-6:
+            if  convergence_fun(err, norm_err):
                 print("Converged!")
                 break
 
