@@ -19,11 +19,11 @@ from matplotlib.figure import Figure
 
 from scipy.integrate import solve_ivp
 
-R = 6371
-V = 7.909788019132536
+R = 6371                     # Km
+V = 7.909788019132536        # km/s
 T = R/V
 A = V**2/R
-M = 500
+M = 500                      # Kg
 TN = M * A
 
 ###############################################################################
