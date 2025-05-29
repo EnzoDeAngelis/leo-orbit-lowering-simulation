@@ -113,12 +113,14 @@ class OrbitalProblem(BaseProblem):
             # calcoliamo l'Hamiltoniana finale
             if timefree and arc_idx == NA-1:
                 Hf = self.compute_H(sol.y[:, -1], data, thr)
-                # Questo moltiplicatore aiuta la convergenza del tempo
-                if abs(Hf) > 1e-4:
-                    Hf *= 100
-                elif abs(Hf) > 1e-5:
-                    Hf *= 10
-                err = np.append(err, Hf*100)
+                # # Questo moltiplicatore aiuta la convergenza del tempo
+                # if abs(Hf) > 1e-4:
+                #     Hf *= 100
+                # elif abs(Hf) > 1e-5:
+                #     Hf *= 10
+                # err = np.append(err, Hf*100)
+                err = np.append(err, Hf)
+                
             if arc_idx != NA-1:
                 err = np.append(err, np.array([sf[-1]]))
             
@@ -158,8 +160,21 @@ class OrbitalProblem(BaseProblem):
                 err = np.append(err, [lmf - v])
             else:
                 raise ValueError(f"Unknown boundary condition: {k}")
-
-        return err
+            
+        # Questo moltiplicatore su Hf (base_err[2]) aiuta la convergenza del tempo. 
+        # Se cambia il numero di archi (NA) va modificato l'indice di base_err che in generale deve essere base_err[NA-1]
+        base_err = err.copy()
+        if abs(base_err[2]) > 1e-4:
+            base_err[2] *= 100
+        elif abs(base_err[2]) > 1e-5:
+            base_err[2] *= 10
+        base_err[2] *= 100    
+        
+        return err, base_err      
+    
+# Ho modificato boundary_error in modo che restituisca due output: err è l'array in cui Hf non è stato moltiplicato ed è quello 
+# da passare a newton_shoot_step ai fini della correzione differenziale. base_err invece è l'array in cui Hf viene moltiplicato  
+# ed è quindi l'array da passare a compute_jacobian_fd al fine di aumentare il gradiente alla convergenza
 
 @njit
 def swfun(fullstate, data):

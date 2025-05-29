@@ -34,7 +34,7 @@ TN = M * A
 def compute_jacobian_fd(
         problem: BaseProblem, param_guess, data, method="forward", timefree=True):
     delta = data[2]
-    base_err = problem.boundary_error(param_guess, data, timefree)
+    err, base_err = problem.boundary_error(param_guess, data, timefree)
     n = len(param_guess)
     m = len(base_err)
     if not timefree:
@@ -54,19 +54,19 @@ def compute_jacobian_fd(
         if method == "forward" or method == "backward":
             # forward difference
             pert[i] += jj if method == "forward" else -jj
-            err_pert = problem.boundary_error(pert, data, timefree)
+            _, err_pert = problem.boundary_error(pert, data, timefree)
             J[:, i] = (err_pert - base_err) / jj
         else:
             # "central" difference
             # we do f(x+delta) - f(x-delta) all over 2*delta
             pert[i] += jj
-            err_pert_plus = problem.boundary_error(pert, data, timefree)
+            _, err_pert_plus = problem.boundary_error(pert, data, timefree)
             pert[i] -= 2*jj
-            err_pert_minus = problem.boundary_error(pert, data, timefree)
+            _, err_pert_minus = problem.boundary_error(pert, data, timefree)
             J[:, i] = (err_pert_plus - err_pert_minus) / (2 * jj)
 
-    return J, base_err
-
+    return J, base_err, err         # Faccio restituire anche err (all'interno del quale Hf non ha moltiplicatori). In questo modo posso chiamare
+                                    # compute_jacobian_fd anche in newton_shoot_step
 def compute_corrections(jacobian, errors):
     try:
         corr = np.linalg.solve(jacobian, -errors)
@@ -90,7 +90,7 @@ def newton_shoot_step(problem: BaseProblem, param_guess, data, alpha=0.1, prever
     # halve alpha, recompute boundary_error_planar, and check again
     err = np.inf
     while counter < 10 and np.linalg.norm(err) > preverr and valid:
-        J, err = compute_jacobian_fd(
+        J, _, err = compute_jacobian_fd(
             problem, param_guess, data, method=method, timefree=timefree)
         dparam = compute_corrections(J, err)
         if timefree:
@@ -104,7 +104,7 @@ def newton_shoot_step(problem: BaseProblem, param_guess, data, alpha=0.1, prever
         alpha = alpha/2
         param_guess = param_next.copy()
     else:
-        J, err = compute_jacobian_fd(
+        J, _, err = compute_jacobian_fd(
             problem, param_guess, data, method=method, timefree=timefree)
         dparam = compute_corrections(J, err)
         if timefree:
