@@ -1,3 +1,7 @@
-numpy
-pytest
+matplotlib
 numba
+numpy
+PyQt5
+pytest
+scipy
+pyyaml
