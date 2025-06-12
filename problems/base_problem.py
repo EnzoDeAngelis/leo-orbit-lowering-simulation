@@ -10,10 +10,8 @@ class BaseProblem(ABC):
       - ODE function
       - boundary error function
       - (optionally) H function, etc.
-      BaseProblem È una classe finta con cui si può creare il file personale, tutto avviene in automatico.
-      Questa classe si aspetta tutte le funzioni presenti in questo file, altrimento non funziona.
     """
-      
+
     @abstractmethod
     def name(self):
         """Return a short string name, e.g. 'Planar' or 'Orbital'."""
@@ -52,7 +50,7 @@ class BaseProblem(ABC):
     def compute_sf(self, state, data):
         """Compute the switching function at a given state if you need it for switching conditions."""
         pass
-
+    
     @abstractmethod
     def states(self):
         """How many states (not counting costates) does this problem have?"""
