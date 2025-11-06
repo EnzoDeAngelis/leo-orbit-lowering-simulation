@@ -1,0 +1,18 @@
+initial_state:
+  r: 1.0784806152880237    #500 km
+  theta: 0.0
+  phi: 0.0
+  u: 0.0
+  v: 0.9629280287694013
+  w: 0.0
+  m: 1.0
+boundary_conditions:
+  r: 1.078433526918851    #499.7 km
+  ltheta: 0.0
+  lphi: 0.0
+  u: 0.0
+  v: 0.9629490510273464
+  lw: 0.0
+  lm: 1.0
+format:
+  dimensional: false
