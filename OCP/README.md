@@ -20,4 +20,4 @@ The project focuses on the numerical propagation of spacecraft dynamics and the 
 This project was developed as part of a Master’s thesis in Aerospace Engineering.
 
 ## Status
-Ongoing / Academic project
+Completed – Academic project (Master’s thesis)
